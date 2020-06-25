@@ -14,7 +14,7 @@ import jmespath.exceptions
 
 def verify_preconditions():
     # Must have a 'dot' executable on the path.
-   rc = call(['type', 'dot'], stdout=PIPE)
+   rc = call(['where', 'dot'], stdout=PIPE)
    if rc != 0:
         sys.stderr.write("Could not find the 'dot' executable.  Ensure "
                          "that graphviz is installed.")
@@ -35,13 +35,13 @@ def main():
     except jmespath.exceptions.JMESPathError as e:
         sys.stderr.write("Invalid expressions: %s\n" % e)
         return 1
-    with tempfile.NamedTemporaryFile('w') as f:
+    with tempfile.NamedTemporaryFile('w', delete=False) as f:
         contents = parsed._render_dot_file()
         f.write(contents)
         f.flush()
         svg_name = os.path.splitext(f.name)[0] + '.png'
-        check_call('dot -Tpng %s -o %s' % (f.name, svg_name), shell=True)
-        webbrowser.open('file://%s' % svg_name)
+    check_call('dot -Tpng %s -o %s' % (f.name, svg_name), shell=True)
+    webbrowser.open('file://%s' % svg_name)
     # Rather than prompt the user to hit enter
     # just sleep for as long as we think is reasonable for
     # an application to open and display the png.

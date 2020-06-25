@@ -322,7 +322,8 @@ class GraphvizVisitor(Visitor):
         self._lines.append('%s [label="%s(%s)"]' % (
             current, node['type'], node.get('value', '')))
         for child in node.get('children', []):
-            child_name = '%s%s' % (child['type'], self._count)
-            self._count += 1
-            self._lines.append('  %s -> %s' % (current, child_name))
-            self._visit(child, child_name)
+            if child is not None and type(child) is not int:
+                child_name = '%s%s' % (child['type'], self._count)
+                self._count += 1
+                self._lines.append('  %s -> %s' % (current, child_name))
+                self._visit(child, child_name)
